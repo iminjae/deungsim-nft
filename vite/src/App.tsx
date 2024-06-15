@@ -5,7 +5,6 @@ import Home from "./pages/Home";
 import Market from "./pages/Market";
 import Mint from "./pages/Mint";
 
-
 const App: FC = () => {
   return (
     <BrowserRouter>
