@@ -1,11 +1,14 @@
-import { Box, Button, Flex, Image, Input } from "@chakra-ui/react";
+import { Box, Button, Flex, Image, Input, Text } from "@chakra-ui/react";
 import { FC, useState } from "react";
-
+import { OutletContext } from "../components/Layout";
+import { useOutletContext } from "react-router-dom";
+import { FaWallet } from "react-icons/fa";
 
 const Mint: FC = () => {
 
+    const { mintContract, signer } = useOutletContext<OutletContext>();
+
     const [name, setName] = useState<string>("");
-    const [price, setPrice] = useState<string>("");
     const [gram, setGram] = useState<string>("");
     const [origin, setOrigin] = useState<string>("");
     const [comment, setComment] = useState<string>("");
@@ -22,7 +25,7 @@ const Mint: FC = () => {
     const onClickSubmit = async () => {
         try {
 
-            if (!name || !price || !gram || !origin || !comment || !tag || !image) return;
+            if (!name  || !gram || !origin || !comment || !tag || !image || !mintContract) return;
 
             setLoading(true);
 
@@ -32,6 +35,9 @@ const Mint: FC = () => {
             const jsonIPFS = await pinJsonToIPFS(imgIPFS);
             setJsonIpfsHash(jsonIPFS);
 
+            const metadataUri = "https://gateway.pinata.cloud/ipfs/" + jsonIPFS;
+            const response = await mintContract.mintNft(metadataUri);
+            await response.wait();
 
         } catch (error) {
             console.error(error);
@@ -42,6 +48,8 @@ const Mint: FC = () => {
     };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(event);
+
         if (event.target.files && event.target.files.length > 0) {
             setImage(event.target.files[0]);
         }
@@ -49,7 +57,6 @@ const Mint: FC = () => {
 
     //imageFile to IPFS
     const pinFileToIPFS = async (): Promise<string> => {
-        // if (!image) return;
 
         try {
             const data = new FormData();
@@ -76,8 +83,6 @@ const Mint: FC = () => {
                 body: data,
             });
 
-
-
             if (!response.ok) {
                 console.error('Failed to upload file:', response.statusText);
             }
@@ -96,16 +101,11 @@ const Mint: FC = () => {
     //jsonfile to IPFS
     const pinJsonToIPFS = async (imgIPFS: string): Promise<string> => {
 
-
         const deungsimJson = {
             name: name,
             description: comment,
             image: imgIPFS,
             attributes: [
-                {
-                    "trait_type": "가격",
-                    "value": price,
-                },
                 {
                     "trait_type": "그램",
                     "value": gram,
@@ -113,16 +113,13 @@ const Mint: FC = () => {
                 {
                     "trait_type": "등급",
                     "value": tag
-                },
-                {
-                    "trait_type": "Ability",
-                    "value": "Shape Shifting"
                 }
             ]
         }
 
         const apiKey = `${import.meta.env.VITE_APP_PINATA_API_KEY}`;
         const secretApiKey = `${import.meta.env.VITE_APP_PINATA_API_SECRET_KEY}`;
+
 
         try {
 
@@ -142,7 +139,7 @@ const Mint: FC = () => {
             }
 
             const data = await response.json();
-            // setJsonIpfsHash(data.ipfsHash);
+
             return data.IpfsHash
 
         } catch (error) {
@@ -150,60 +147,30 @@ const Mint: FC = () => {
             throw error;
         }
 
-
-
-
-
-
     };
 
+    return (
+        signer ? (
+            <>
+                < Flex >
+                    <Box>
+                        이름 : <Input value={name} onChange={(e) => setName(e.target.value)} />
+                        그램 : <Input value={gram} onChange={(e) => setGram(e.target.value)} />
+                        원산지 : <Input value={origin} onChange={(e) => setOrigin(e.target.value)} />
+                        설명 : <Input value={comment} onChange={(e) => setComment(e.target.value)} />
+                        등급 : <Input value={tag} onChange={(e) => setTag(e.target.value)} />
+                        사진 :<Input type="file" onChange={handleFileChange} />
+                        <Button onClick={onClickSubmit} isDisabled={loading} isLoading={loading} loadingText="로딩중">
+                            등록
+                        </Button>
+                    </Box>
+                </Flex >
+            </>
+        ) : (
+            <Text> <FaWallet /> 연결이 필요합니다.</Text>
+        )
+    )
 
-
-
-
-
-
-
-
-
-    return <Flex>
-
-        <Box>
-            이름 : <Input value={name} onChange={(e) => setName(e.target.value)} />
-            가격 : <Input value={price} onChange={(e) => setPrice(e.target.value)} />
-            그램 : <Input value={gram} onChange={(e) => setGram(e.target.value)} />
-            원산지 : <Input value={origin} onChange={(e) => setOrigin(e.target.value)} />
-            설명 : <Input value={comment} onChange={(e) => setComment(e.target.value)} />
-
-            등급 : <Input value={tag} onChange={(e) => setTag(e.target.value)} />
-            사진 :
-            <Input
-                multiple type="file"
-                onChange={handleFileChange}
-            />
-            {imgIpfsHash && (
-                <div>
-                    <p>File uploaded successfully. IPFS Hash:</p>
-                    <a href={`https://gateway.pinata.cloud/ipfs/${imgIpfsHash}`} target="_blank" rel="noopener noreferrer">
-                        {imgIpfsHash}
-                    </a>
-                    <Image src={`https://gateway.pinata.cloud/ipfs/${imgIpfsHash}`} />
-                </div>
-
-
-            )}
-            <Button
-                ml={2}
-                onClick={onClickSubmit}
-                isDisabled={loading}
-                isLoading={loading}
-                loadingText="로딩중"
-            >
-                등록
-            </Button>
-        </Box>
-
-    </Flex>;
 };
 
 export default Mint;

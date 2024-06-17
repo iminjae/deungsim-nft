@@ -19,7 +19,7 @@ interface HeaderProps {
     signer: JsonRpcSigner | null;
     setSigner: Dispatch<SetStateAction<JsonRpcSigner | null>>;
     setMintContract: Dispatch<SetStateAction<Contract | null>>;
-    setSaleContract: Dispatch<SetStateAction<Contract | null>>;
+
 }
 
 const Header: FC<HeaderProps> = ({ signer, setSigner, setMintContract }) => {
@@ -44,7 +44,7 @@ const Header: FC<HeaderProps> = ({ signer, setSigner, setMintContract }) => {
             return;
         }
 
-        setMintContract(new Contract("", mintAbi, signer));
+        setMintContract(new Contract("0x316c45fD0046ab8b78b89C260f5b3231224F0774", mintAbi, signer));
 
     }, [signer]);
 
