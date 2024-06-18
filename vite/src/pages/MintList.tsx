@@ -6,7 +6,7 @@ import axios from "axios";
 import MintCard from "../components/MintCard";
 import { FaWallet } from "react-icons/fa";
 
-const PAGE = 6;
+const PAGE = 8;
 
 const MintList: FC = () => {
   const [nftMetadataArray, setNftMetadataArray] = useState<NftMetadata[]>([]);
@@ -90,19 +90,16 @@ const MintList: FC = () => {
     getNftMetadata();
   }, [balanceOf]);
 
-  useEffect(() => console.log(tokenIds), [tokenIds]);
+
 
   return (
     <Flex w="100%" alignItems="center" flexDir="column" gap={2} mt={8} mb={20}>
       {signer ? (
         <>
-          
-          
           <Grid
             templateColumns={[
-              "repeat(1, 1fr)",
-              "repeat(1, 1fr)",
-              "repeat(2, 1fr)",
+              "repeat(4, 1fr)",
+              
             ]}
             gap={6}
           >

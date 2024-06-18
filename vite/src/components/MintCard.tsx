@@ -15,6 +15,7 @@ import { Contract, formatEther, parseEther } from "ethers";
 import { FC, useEffect, useState } from "react";
 import { FaEthereum } from "react-icons/fa";
 import { JsonRpcSigner } from "ethers";
+import { useNavigate } from "react-router-dom";
 
 interface NftCardProps {
     nftMetadata: NftMetadata;
@@ -35,6 +36,7 @@ const NftCard: FC<NftCardProps> = ({
     const [salePrice, setSalePrice] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
+    const navigate = useNavigate();
 
     const getTokenPrice = async () => {
         try {
@@ -83,31 +85,38 @@ const NftCard: FC<NftCardProps> = ({
         getTokenPrice();
     }, [saleContract, tokenId]);
 
+    const handleInputClick = (e) => {
+        e.stopPropagation();
+      };
+    
+
     return (
+        <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" m={2} _hover={{ borderColor: 'gray.800', borderWidth: '2px' }} onClick={() => navigate("/DetailAdmItem", {state : {nftMetadata:nftMetadata, tokenId:tokenId, price:currentPrice}})}>
+            <Image src={nftMetadata?.image} alt={nftMetadata?.name} />
 
-        <Box p={4}>
-            <Grid templateColumns="repeat(auto-fill, minmax(250px, 1fr))" gap={6}>
+            <Box p="6">
+                <Box alignItems="baseline">
+                    <Text
+                        mt="1"
+                        fontWeight="semibold"
+                        as="h4"
+                        lineHeight="tight"
+                        isTruncated
+                    >
+                        {nftMetadata?.name}
+                    </Text>
+                </Box>
 
-                <GridItem bg={useColorModeValue('white', 'gray.800')} shadow="md" borderWidth="1px" borderRadius="lg" overflow="hidden">
-                    <Image src={nftMetadata.image} alt={nftMetadata.name} />
-
-                    <Box p={6}>
-                        <Stack spacing={1} >
-                            <Text fontWeight="bold" fontSize="xl">{nftMetadata.name}</Text>
-                            <Text>{nftMetadata.description}</Text>
-                            {nftMetadata.attributes?.map((w, j) => (
-                                <Box key={j} p={1} >
-                                    <Text >{w.trait_type} {w.value}</Text>
-                                </Box>
-                            ))}
-                        </Stack>
-
-                        {currentPrice ? (
+                <Text mt="2" color="gray.500">
+                    {nftMetadata?.description}
+                </Text>
+                {currentPrice ? (
                             <Text>{formatEther(currentPrice)} <FaEthereum /></Text>
                         )
                             : (<>
-                                <InputGroup>
+                                <InputGroup onClick={handleInputClick}>
                                     <Input
+
                                         type="number"
                                         value={salePrice}
                                         onChange={(e) => setSalePrice(e.target.value)}
@@ -118,7 +127,10 @@ const NftCard: FC<NftCardProps> = ({
                                 </InputGroup>
                                 <Button
                                     ml={0}
-                                    onClick={onClickSetForSaleNft}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onClickSetForSaleNft();
+                                      }}
                                     isDisabled={isLoading}
                                     isLoading={isLoading}
                                     loadingText="로딩중"
@@ -128,17 +140,10 @@ const NftCard: FC<NftCardProps> = ({
                                 </Button>
                             </>
                             )}
-
-
-
-
-
-                    </Box>
-                </GridItem>
-
-            </Grid>
+            </Box>
         </Box>
 
+       
     );
 };
 

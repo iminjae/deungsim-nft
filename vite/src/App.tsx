@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import Market from "./pages/Market";
 import Mint from "./pages/Mint";
 import MintList from "./pages/MintList";
+import DetailAdmItem from "./pages/DetailAdmItem";
+import DetailMarketItem from "./pages/DetailAdmItem";
 
 const App: FC = () => {
   return (
@@ -15,6 +17,8 @@ const App: FC = () => {
           <Route path="/market" element={<Market />} />
           <Route path="/marketList" element={<MintList />} />
           <Route path="/createMarketItemForm" element={<Mint />} />
+          <Route path="/DetailAdmItem" element={<DetailAdmItem />} />
+          <Route path="/DetailMarketItem" element={<DetailMarketItem />} />
         </Route>
       </Routes>
     </BrowserRouter>
