@@ -16,7 +16,6 @@ contract MarketNft {
     function setForSaleNft(uint _tokenId, uint _price) public {
         require(msg.sender == mintNftContract.ownerOf(_tokenId), "Caller is not token owner.");
         require(_price > 0, "Price is zero.");
-        require(mintNftContract.isApprovedForAll(msg.sender, address(this)), "Token owner did not approve token.");
         require(tokenPrice[_tokenId] == 0, "This token is already on sale.");
 
         tokenPrice[_tokenId] = _price;

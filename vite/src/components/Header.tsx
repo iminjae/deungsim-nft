@@ -14,15 +14,22 @@ import { Dispatch, FC, SetStateAction, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import mintAbi from "../abis/mintAbi.json";
+import saleAbi from "../abis/saleAbi.json";
+import HoverMenu from "./HoverMenu";
+import {
+    mintContractAddress,
+    saleContractAddress,
+} from "../abis/contractAddress";
+
 
 interface HeaderProps {
     signer: JsonRpcSigner | null;
     setSigner: Dispatch<SetStateAction<JsonRpcSigner | null>>;
     setMintContract: Dispatch<SetStateAction<Contract | null>>;
-
+    setSaleContract: Dispatch<SetStateAction<Contract | null>>;
 }
 
-const Header: FC<HeaderProps> = ({ signer, setSigner, setMintContract }) => {
+const Header: FC<HeaderProps> = ({ signer, setSigner, setMintContract, setSaleContract }) => {
     const navigate = useNavigate();
 
     const onClickMetamask = async () => {
@@ -44,8 +51,8 @@ const Header: FC<HeaderProps> = ({ signer, setSigner, setMintContract }) => {
             return;
         }
 
-        setMintContract(new Contract("0x316c45fD0046ab8b78b89C260f5b3231224F0774", mintAbi, signer));
-
+        setMintContract(new Contract(mintContractAddress, mintAbi, signer));
+        setSaleContract(new Contract(saleContractAddress, saleAbi, signer));
     }, [signer]);
 
     return (
@@ -71,14 +78,7 @@ const Header: FC<HeaderProps> = ({ signer, setSigner, setMintContract }) => {
                 </Button>
             </Flex>
             <Flex alignItems="center" gap={[2, 2, 4]}>
-                <Button
-                    variant="link"
-                    colorScheme="black"
-                    size={["xs", "xs", "md"]}
-                    onClick={() => navigate("/Mint")}
-                >
-                    Mint
-                </Button>
+                <HoverMenu />
             </Flex>
             <Flex w={40} justifyContent="end" alignItems="center">
                 {signer ? (

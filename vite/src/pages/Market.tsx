@@ -12,8 +12,6 @@ const Market: FC = () => {
     const [tokenIds, setTokenIds] = useState<number[]>([]);
 
 
-   
-
 
     return (
         <Grid

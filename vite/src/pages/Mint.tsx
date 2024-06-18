@@ -35,8 +35,8 @@ const Mint: FC = () => {
             const jsonIPFS = await pinJsonToIPFS(imgIPFS);
             setJsonIpfsHash(jsonIPFS);
 
-            const metadataUri = "https://gateway.pinata.cloud/ipfs/" + jsonIPFS;
-            const response = await mintContract.mintNft(metadataUri);
+            
+            const response = await mintContract.mintNft("https://gateway.pinata.cloud/ipfs/"+jsonIPFS);
             await response.wait();
 
         } catch (error) {
@@ -104,7 +104,7 @@ const Mint: FC = () => {
         const deungsimJson = {
             name: name,
             description: comment,
-            image: imgIPFS,
+            image: "https://gateway.pinata.cloud/ipfs/" + imgIPFS,
             attributes: [
                 {
                     "trait_type": "그램",
@@ -113,6 +113,10 @@ const Mint: FC = () => {
                 {
                     "trait_type": "등급",
                     "value": tag
+                },
+                {
+                    "trait_type": "원산지",
+                    "value": origin
                 }
             ]
         }
