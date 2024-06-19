@@ -9,15 +9,13 @@ import { saleContractAddress } from "../abis/contractAddress";
 
 const PAGE = 8;
 
-const MintList: FC = () => {
+const MyList: FC = () => {
   const [nftMetadataArray, setNftMetadataArray] = useState<NftMetadata[]>([]);
   const [balanceOf, setBalanceOf] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [isEnd, setIsEnd] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isApprovedForAll, setIsApprovedForAll] = useState<boolean>(false);
-  const [isApproveLoading, setIsApproveLoading] = useState<boolean>(false);
-
 
   const [tokenIds, setTokenIds] = useState<number[]>([]);
 
@@ -83,25 +81,7 @@ const MintList: FC = () => {
     }
   };
 
-  const onClickSetApprovalForAll = async () => {
-    try {
-      setIsApproveLoading(true);
-
-      const response = await mintContract?.setApprovalForAll(
-        saleContractAddress,
-        !isApprovedForAll
-      );
-
-      await response.wait();
-
-      setIsApprovedForAll(!isApprovedForAll);
-      setIsApproveLoading(false);
-    } catch (error) {
-      console.error(error);
-
-      setIsApproveLoading(false);
-    }
-  };
+  
 
   useEffect(() => {
     if (!mintContract || !signer) return;
@@ -128,19 +108,7 @@ const MintList: FC = () => {
     <Flex w="100%" alignItems="center" flexDir="column" gap={2} mt={8} mb={20}>
       {signer ? (
         <>
-        <Flex alignItems="center" gap={5}>
-
-        <Text fontSize="4xl" fontWeight="semibold">판매 권한 : {isApprovedForAll ? "승인" : "거부"}</Text>
-        <Button
-            colorScheme={isApprovedForAll ? "red" : "green"}
-            onClick={onClickSetApprovalForAll}
-            isDisabled={isApproveLoading}
-            isLoading={isApproveLoading}
-            loadingText="로딩중"
-        >
-            {isApprovedForAll ? "취소" : "승인"}
-        </Button>
-        </Flex>
+        
           <Grid
             templateColumns={[
               "repeat(4, 1fr)",
@@ -185,4 +153,4 @@ const MintList: FC = () => {
   );
 };
 
-export default MintList;
+export default MyList;

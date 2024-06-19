@@ -14,10 +14,11 @@ const HoverMenu: React.FC = () => {
         
             onMouseEnter={() => setIsOpen(true)}
             onMouseLeave={() => setIsOpen(false)}
+            fontWeight="semibold"
           >
-            관리자
+            ADMIN PAGE
           </MenuButton>
-          <MenuList onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
+          <MenuList onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)} textColor="black">
             <MenuItem onClick={() => navigate("/MarketList")}>상품 목록</MenuItem>
             <MenuItem onClick={() => navigate("/createMarketItemForm")}>상품 등록</MenuItem>
           </MenuList>

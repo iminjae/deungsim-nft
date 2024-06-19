@@ -1,40 +1,40 @@
 import {
     Box,
     Button,
-    Grid,
-    GridItem,
+    Flex,
+    Icon,
     Image,
     Input,
     InputGroup,
     InputRightAddon,
-    Stack,
     Text,
-    useColorModeValue,
+    useDisclosure,
 } from "@chakra-ui/react";
 import { Contract, formatEther, parseEther } from "ethers";
 import { FC, useEffect, useState } from "react";
 import { FaEthereum } from "react-icons/fa";
-import { JsonRpcSigner } from "ethers";
 import { useNavigate } from "react-router-dom";
+import CreateOkModal from "./CreateOkModal";
 
 interface NftCardProps {
     nftMetadata: NftMetadata;
     tokenId: number;
-    mintContract: Contract | null;
     saleContract: Contract | null;
-    signer: JsonRpcSigner | null;
+    isApprovedForAll: boolean;
 }
 
 const NftCard: FC<NftCardProps> = ({
     nftMetadata,
     tokenId,
-    mintContract,
     saleContract,
-    signer,
+    isApprovedForAll,
 }) => {
     const [currentPrice, setCurrentPrice] = useState<bigint>();
     const [salePrice, setSalePrice] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [message, setMessage] = useState<string>("");
+    const [titleMessage, setTitleMessage] = useState<string>("");
 
     const navigate = useNavigate();
 
@@ -48,16 +48,13 @@ const NftCard: FC<NftCardProps> = ({
         }
     };
 
-
-
-
-
     const onClickSetForSaleNft = async () => {
         try {
             if (!salePrice || isNaN(Number(salePrice))) return;
 
 
             setIsLoading(true);
+
 
             const response = await saleContract?.setForSaleNft(
                 tokenId,
@@ -66,16 +63,17 @@ const NftCard: FC<NftCardProps> = ({
 
             await response.wait();
 
-            const approveResponse = await mintContract?.approve(signer, tokenId);
-            await approveResponse.wait();
-
             setCurrentPrice(parseEther(salePrice));
-
+            setMessage("판매 등록이 완료되었습니다.");
+            setTitleMessage("판매 등록 완료!");
             setIsLoading(false);
+            onOpen();
         } catch (error) {
             console.error(error);
-
             setIsLoading(false);
+            setMessage("판매 등록에 실패 했습니다.");
+            setTitleMessage("판매 등록 실패!");
+            onOpen();
         }
     };
 
@@ -85,65 +83,72 @@ const NftCard: FC<NftCardProps> = ({
         getTokenPrice();
     }, [saleContract, tokenId]);
 
-    const handleInputClick = (e) => {
+    const handleInputClick = (e: any) => {
         e.stopPropagation();
-      };
-    
+    };
+
 
     return (
-        <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" m={2} _hover={{ borderColor: 'gray.800', borderWidth: '2px' }} onClick={() => navigate("/DetailAdmItem", {state : {nftMetadata:nftMetadata, tokenId:tokenId, price:currentPrice}})}>
-            <Image src={nftMetadata?.image} alt={nftMetadata?.name} />
+        <Box borderColor="gray.700" maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" m={2} _hover={{ borderColor: 'gray.900', borderWidth: '2px' }} onClick={() => navigate("/detailAdmItem", { state: { nftMetadata: nftMetadata, tokenId: tokenId, price: currentPrice } })}>
+            <Image
+                src={nftMetadata?.image}
+                alt={nftMetadata?.name}
+                borderRadius="lg"
+                width="100%"
+                height="250px"
+                objectFit="cover"
+            />
 
-            <Box p="6">
+            <Box p="3">
                 <Box alignItems="baseline">
-                    <Text
-                        mt="1"
-                        fontWeight="semibold"
-                        as="h4"
-                        lineHeight="tight"
-                        isTruncated
-                    >
+                    <Text fontSize="2xl">
                         {nftMetadata?.name}
                     </Text>
                 </Box>
 
-                <Text mt="2" color="gray.500">
-                    {nftMetadata?.description}
-                </Text>
                 {currentPrice ? (
-                            <Text>{formatEther(currentPrice)} <FaEthereum /></Text>
-                        )
-                            : (<>
-                                <InputGroup onClick={handleInputClick}>
-                                    <Input
+                    <Flex alignItems="center" mt={10} textColor="gray.600" fontSize="lg">
+                        <Icon as={FaEthereum} />
+                        <Text>{formatEther(currentPrice)}</Text>
+                    </Flex>
+                ) :
+                    isApprovedForAll ? (<>
+                        <InputGroup onClick={handleInputClick}   mt={6}>
+                            <Input
 
-                                        type="number"
-                                        value={salePrice}
-                                        onChange={(e) => setSalePrice(e.target.value)}
-                                        textAlign="right"
-                                        isDisabled={isLoading}
-                                    />
-                                    <InputRightAddon><FaEthereum /></InputRightAddon>
-                                </InputGroup>
-                                <Button
-                                    ml={0}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        onClickSetForSaleNft();
-                                      }}
-                                    isDisabled={isLoading}
-                                    isLoading={isLoading}
-                                    loadingText="로딩중"
-                                    colorScheme="red"
-                                >
-                                    판매하기
-                                </Button>
-                            </>
-                            )}
+                                type="number"
+                                value={salePrice}
+                                onChange={(e) => setSalePrice(e.target.value)}
+                                textAlign="right"
+                                isDisabled={isLoading}
+                              
+                            />
+                            <InputRightAddon><FaEthereum /></InputRightAddon>
+                        </InputGroup>
+                        <Button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onClickSetForSaleNft();
+                            }}
+                            isDisabled={isLoading}
+                            isLoading={isLoading}
+                            loadingText="로딩중"
+                            size='md'
+                            w="100%"
+                            border='2px'
+                            borderColor='green.500'
+                            mt={3}
+
+                        >
+                            판매하기
+                        </Button>
+                    </>
+                    ) : ("")}
             </Box>
+            <CreateOkModal isOpen={isOpen} onClose={onClose} message={message} titleMessage={titleMessage}/>
         </Box>
+    
 
-       
     );
 };
 

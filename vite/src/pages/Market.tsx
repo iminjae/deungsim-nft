@@ -6,17 +6,12 @@ import MarketCard from "../components/MarketCard";
 import { FaWallet } from "react-icons/fa";
 
 
-
-// const PAGE = 8;
-
 const Market: FC = () => {
 
     const [tokenIds, setTokenIds] = useState<number[]>([]);
     const [isEnd, setIsEnd] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
-    const { signer, saleContract, mintContract } =
-        useOutletContext<OutletContext>();
+    const { signer, saleContract, mintContract } = useOutletContext<OutletContext>();
 
     const getOnSaleTokens = async () => {
         try {
@@ -28,16 +23,19 @@ const Market: FC = () => {
             });
 
             
-
             setTokenIds(temp);
+            setIsEnd(true);
             setIsLoading(false);
         } catch (error) {
             console.error(error);
             setIsLoading(false);
+
         }
     };
 
+
     useEffect(() => {
+
         if (!saleContract) return;
 
         getOnSaleTokens();
@@ -69,23 +67,20 @@ const Market: FC = () => {
                         ))}
                     </Grid>
                     {!isEnd && (
-                        <Button
-                            mt={8}
-                            onClick={() => getOnSaleTokens()}
-                            isDisabled={isLoading}
-                            isLoading={isLoading}
-                            loadingText="로딩중"
-                        >
-                            더 보기
-                        </Button>
-                    )}
+                    <Button
+                    mt={8}
+                    isDisabled={isLoading}
+                    isLoading={isLoading}
+                    loadingText="로딩중"
+                    >
+                    </Button>
+                )}
                 </>
             ) : (
                 <Text> <FaWallet /> 연결이 필요합니다.</Text>
             )}
         </Flex>
     )
-
 };
 
 export default Market;

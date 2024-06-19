@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import { JsonRpcSigner } from "ethers";
 import { Contract } from "ethers";
+import Footer from "./Footer";
 
 export interface OutletContext {
   mintContract: Contract | null;
@@ -17,16 +18,18 @@ const Layout: FC = () => {
   const [saleContract, setSaleContract] = useState<Contract | null>(null);
 
   return (
-    <Flex maxW={768} mx="auto" minH="100vh" flexDir="column">
+    <Flex  mx="auto" minH="100vh" flexDir="column" >
       <Header
         signer={signer}
         setSigner={setSigner}
         setMintContract={setMintContract}
         setSaleContract={setSaleContract}
+
       />
-      <Flex flexGrow={1}>
+      <Flex flexGrow={1} mt={20}>
         <Outlet context={{ mintContract, saleContract, signer }} />
       </Flex>
+      <Footer /> 
     </Flex>
   );
 };

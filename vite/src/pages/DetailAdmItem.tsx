@@ -2,6 +2,7 @@ import {
 
     Box,
     Image,
+    SimpleGrid,
     Text,
 
 } from "@chakra-ui/react";
@@ -20,29 +21,36 @@ const DetailMarketItem: FC = () => {
     const { state } = useLocation();
     const { nftMetadata } = state;
     const { tokenId } = state;
+    const {price} = state;
 
+
+    console.log(price);
+    
 
     return (
 
-        <Box p={5} maxW="600px" mx="auto" borderWidth="1px" borderRadius="lg" overflow="hidden">
-            <Image src={nftMetadata.image} alt={nftMetadata.name} />
+        <Box maxW="600px" mx="auto" borderWidth="1px" borderRadius="lg" overflow="hidden" mt={10} mb={10} borderColor="gray.700" >
+            <Image src={nftMetadata.image} alt={nftMetadata.name} borderBottom="1px" />
             <Box p={5}>
-                <Text fontSize="2xl" fontWeight="bold">{nftMetadata.name}</Text>
-                설명 : <Text mt={2}>{nftMetadata.description}</Text>
-                {nftMetadata.attributes?.map((v, i) => (
-                    <Box key={i} p={1} >
-                        <Text >{v.trait_type} : {v.value}</Text>
+                <Text fontSize="3xl" fontWeight="bold" mt={2}>{nftMetadata.name}</Text>
+                <Text fontSize="2xl" mt={2}>{nftMetadata.description}</Text>
+                <SimpleGrid columns={3} spacing={50} mt={10} mb={10}>
+                    {nftMetadata.attributes?.map((v: any, i: any) => (
+                    <Box key={i}>
+                        <Text fontSize="2xl" >{v.trait_type} : {v.value}</Text>
                     </Box>
                 ))}
-                {nftMetadata.price ? (
-                    <Text>가격 : {formatEther(nftMetadata.price)} <FaEthereum /></Text>
-                ):(
-                    ""
-                )}
-                
-                <Text mt={2} color="gray.500">Token ID: {tokenId}</Text>
+                </SimpleGrid>
 
-                <Text mt={2} color="gray.500">Contract Address: {mintContractAddress}</Text>
+                {/* {price ? (
+                    <Text>가격 : {formatEther(price)} <FaEthereum /></Text>
+                ) : (
+                    ""
+                )} */}
+
+                <Text mt={2} fontSize="sm" color="gray.500">Token ID: {tokenId}</Text>
+
+                <Text color="gray.500" fontSize="sm">Contract Address: {mintContractAddress}</Text>
             </Box>
         </Box>
     );

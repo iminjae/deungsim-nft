@@ -1,5 +1,7 @@
 import {
   Box,
+  Flex,
+  Icon,
   Image,
   Text,
 } from "@chakra-ui/react";
@@ -22,13 +24,11 @@ const MarketCard: FC<MarketCardProps> = ({
   tokenId,
   mintContract,
   saleContract,
-  signer,
-  tokenIds,
-  setTokenIds,
+
 }) => {
 
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const [nftMetadata, setNftMetadata] = useState<MarketNftMetadata>();
 
   const getNftMetadata = async () => {
@@ -49,31 +49,7 @@ const MarketCard: FC<MarketCardProps> = ({
     }
   };
 
-  const onClickPurchaseNft = async () => {
-    try {
-      setIsLoading(true);
 
-      const response = await saleContract?.purchaseNft(tokenId, {
-        value: nftMetadata?.price,
-      });
-
-      await response.wait();
-
-      const temp = tokenIds.filter((v) => {
-        if (v !== tokenId) {
-          return v;
-        }
-      });
-
-      setTokenIds(temp);
-
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-
-      setIsLoading(false);
-    }
-  };
 
   useEffect(() => {
     if (!saleContract || !tokenId || !mintContract) return;
@@ -85,31 +61,46 @@ const MarketCard: FC<MarketCardProps> = ({
 
 
   return (
-    <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" m={2} _hover={{ borderColor: 'gray.800', borderWidth: '2px' }} onClick={() => navigate("/detailMarketItem", { state: { nftMetadata: nftMetadata, tokenId: tokenId} })}>
-      <Image src={nftMetadata?.image} alt={nftMetadata?.name} />
+    <Box
+      maxW="sm"
+      borderWidth="1px"
+      borderRadius="lg"
+      overflow="hidden"
+      borderColor="gray.700"
+      m={2}
+      _hover={{ borderColor: 'gray.900', borderWidth: '2px' }}
+      onClick={() => navigate("/detailMarketItem", { state: { nftMetadata: nftMetadata, tokenId: tokenId } })}
+    >
+      <Image
+        src={nftMetadata?.image}
+        alt={nftMetadata?.name}
+        width="100%"
+        height="250px"
+        objectFit="cover"
+        borderBottom="1px"
+      />
 
-      <Box p="6">
+      <Box p="3">
         <Box alignItems="baseline">
           <Text
-            mt="1"
-            fontWeight="semibold"
-            as="h4"
-            lineHeight="tight"
-            isTruncated
+            fontSize="2xl"
           >
             {nftMetadata?.name}
           </Text>
         </Box>
 
-        <Text mt="2" color="gray.500">
-          {nftMetadata?.description}
+        {nftMetadata?.price ? (
+          <Flex alignItems="center" mt={5} textColor="gray.600" fontSize="lg">
+            <Icon as={FaEthereum}/>
+            <Text>{formatEther(nftMetadata?.price)}</Text>
+            
+          </Flex>
 
-          {nftMetadata?.price ? (
-            <Text>{formatEther(nftMetadata?.price)} <FaEthereum /></Text>
-          ):(
-            ""
-          )}
-        </Text>
+
+        ) : (
+          ""
+        )}
+
       </Box>
     </Box>
   );
