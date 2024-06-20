@@ -11,8 +11,8 @@ import {
 } from "../abis/contractAddress";
 import { FC } from "react";
 import { useLocation } from "react-router-dom";
-import { formatEther } from "ethers";
-import { FaEthereum } from "react-icons/fa";
+
+
 
 
 

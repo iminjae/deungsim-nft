@@ -21,8 +21,8 @@ const Mint: FC = () => {
     const [titleMessage, setTitleMessage] = useState<string>("");
     const navigate = useNavigate();
 
-    const [imgIpfsHash, setImgIpfsHash] = useState<string | null>(null);
-    const [jsonIpfsHash, setJsonIpfsHash] = useState<string | null>(null);
+    // const [imgIpfsHash, setImgIpfsHash] = useState<string | null>(null);
+    // const [jsonIpfsHash, setJsonIpfsHash] = useState<string | null>(null);
 
 
     const onClickSubmit = async () => {
@@ -33,10 +33,10 @@ const Mint: FC = () => {
             setLoading(true);
 
             const imgIPFS = await pinFileToIPFS();
-            setImgIpfsHash(imgIPFS);
+            // setImgIpfsHash(imgIPFS);
 
             const jsonIPFS = await pinJsonToIPFS(imgIPFS);
-            setJsonIpfsHash(jsonIPFS);
+            // setJsonIpfsHash(jsonIPFS);
 
 
             const response = await mintContract.mintNft("https://gateway.pinata.cloud/ipfs/" + jsonIPFS);

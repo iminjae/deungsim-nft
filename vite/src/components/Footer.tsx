@@ -1,4 +1,4 @@
-import { Box, Flex, Icon, IconButton, Stack, Text, useColorModeValue } from "@chakra-ui/react";
+import { Box, Flex, Icon, IconButton, Stack, Text } from "@chakra-ui/react";
 import { FC } from "react";
 import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
 import { SiHappycow } from "react-icons/si";
